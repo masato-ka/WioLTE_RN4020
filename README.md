@@ -10,7 +10,6 @@ Wil LTE_RN4020
 
 ## Licence
 
-[MIT LICENCE](https://github.com/masato-ka/geo-hash-potate/blob/master/LICENSE.txt)
 
 
 ## Author
