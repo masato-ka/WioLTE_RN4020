@@ -1,0 +1,5 @@
+{
+    "terminal.integrated.env.osx": {
+        "PATH": "/Users/kawamuramasato/.platformio/penv/bin:/usr/local/apache-maven/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/opt/X11/bin:/usr/local/go/bin:/Library/Frameworks/Mono.framework/Versions/Current/Commands"
+    }
+}
