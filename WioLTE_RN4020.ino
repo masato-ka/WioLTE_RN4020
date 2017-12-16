@@ -70,7 +70,39 @@ int hex_format_str_to_decimal(String str){
 
 
 double templature(String raw){
-  return hex_format_str_to_decimal(raw.c_str()) * 0.01;
+  return hex_format_str_to_decimal(raw.substring(2,6).c_str()) * 0.01;
+}
+
+double humidity(String raw){
+  return hex_format_str_to_decimal(raw.substring(6,10).c_str()) * 0.01;
+}
+
+double lumix(String raw){
+  return hex_format_str_to_decimal(raw.substring(10,14).c_str());
+}
+
+double uvi(String raw){
+  return hex_format_str_to_decimal(raw.substring(14,18).c_str()) * 0.01;
+}
+
+double pressure(String raw){
+  return hex_format_str_to_decimal(raw.substring(18,22).c_str()) * 0.1;
+}
+
+double noise(String raw){
+  return hex_format_str_to_decimal(raw.substring(22,26).c_str()) * 0.01;
+}
+
+double disco(String raw){
+  return hex_format_str_to_decimal(raw.substring(26,30).c_str()) * 0.01;
+}
+
+double heat(String raw){
+  return hex_format_str_to_decimal(raw.substring(30,34).c_str()) * 0.01;
+}
+
+double battery(String raw){
+  return hex_format_str_to_decimal(raw.substring(34,38).c_str()) * 0.001;
 }
 
 void setup() {
@@ -105,7 +137,7 @@ void setup() {
 
 }
 
-double get_temprature(){
+String get_wx2beacon_data(){
   SerialUSB.println("### Connect to periferal");
   Serial.println("E,1,E6E4B1DA83BC");
   delay(2000);
@@ -114,21 +146,11 @@ double get_temprature(){
   Serial.println("CHR,0019");
   delay(500);
   copySerialBuffer(buffer);
-  String raw_data = String(buffer);
-  #ifdef PRINT_DEBUG
-    SerialUSB.print("Dump raw_data: ");
-    SerialUSB.println(raw_data.substring(2,40));
-  #endif
-  String data = raw_data.substring(2,40);
-  double temp = templature(data.substring(2,6));
-  #ifdef PRINT_DEBUG
-    SerialUSB.println(temp);
-  #endif
   SerialUSB.println("#### Disconnect");
   Serial.println("K");
   delay(500);
   trashSerialBuffer();
-  return temp;
+  return String(buffer);
 }
 
 void send_to_harvest(char *data){
@@ -170,14 +192,22 @@ void send_to_harvest(char *data){
 }
 
 void loop() {
-  char data[100];
-  
-  double temp = get_temprature();
-  sprintf(data,"{\"temp\":%.1f}", temp);
+  char data[200];
+  String raw_data_str = get_wx2beacon_data();
+  SerialUSB.println(raw_data_str);
+  String data_str = raw_data_str.substring(2,40);
+
+
+  sprintf(data, "{\"temp\":%.2f, \"humid\":%.2f,\"lumix\":%.2f, \"uvi\":%.2f,\"pressure\":%.2f, \"noise\":%.1f,\"disco\":%.1f, \"heat\":%.1f,\"batt\":%.3f}",
+                  templature(data_str), humidity(data_str),
+                  lumix(data_str), uvi(data_str),
+                  pressure(data_str), noise(data_str),
+                  disco(data_str), heat(data_str),
+                  battery(data_str));
   SerialUSB.println(data);
 
   send_to_harvest(data);
   
-  delay(600000L);
+  delay(1800000L);
 }
 
